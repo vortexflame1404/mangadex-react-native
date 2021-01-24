@@ -1,18 +1,71 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import { Input, Text, Layout, Button, useTheme } from '@ui-kitten/components';
+import { View, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
+import {
+  Input,
+  Text,
+  Layout,
+  Button,
+  useTheme,
+  Icon,
+  Spinner,
+  CheckBox,
+} from '@ui-kitten/components';
 import Strings from '../../assets/Strings';
 import styles from './styles';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  login,
+  selectAuthStatusText,
+  selectIsAuthenticating,
+} from '../../redux/authSlices';
+import { unwrapResult } from '@reduxjs/toolkit';
 
-export default function LoginScreen(props) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginScreen({ navigation, route }) {
+  const [username, setUsername] = useState('thangle');
+  const [password, setPassword] = useState('thang01287539959');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const statusText = useSelector(selectAuthStatusText);
+  const isAuthenticating = useSelector(selectIsAuthenticating);
+  const buttonUsable = [username, password].every(Boolean) && !isAuthenticating;
+  const buttonContent = isAuthenticating ? (
+    <Spinner status={'basic'} />
+  ) : (
+    <Text style={{ color: theme['text-basic-color'] }}>
+      {Strings.LOGIN_BTN}
+    </Text>
+  );
+
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+
+  const renderIcon = (props) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} />
+    </TouchableWithoutFeedback>
+  );
+
+  if (statusText) {
+    ToastAndroid.show(statusText, ToastAndroid.SHORT);
+  }
+  const handleLogin = async () => {
+    try {
+      const resultAction = await dispatch(
+        login({ username, password, remember_me: rememberMe }),
+      );
+      unwrapResult(resultAction);
+    } catch (e) {
+      console.log('login failed', e.message);
+    }
+  };
 
   return (
     <Layout style={styles.container}>
       <Text
-        style={[styles.logo, { color: theme['color-primary-default'] }]}
+        style={[styles.logo, { color: theme['text-basic-color'] }]}
         category={'h1'}>
         {Strings.APP_NAME}
       </Text>
@@ -21,20 +74,31 @@ export default function LoginScreen(props) {
           style={styles.inputText}
           placeholder={Strings.USERNAME_PLACEHOLDER}
           value={username}
-          onChangeText={setUsername}
+          onChangeText={(text) => setUsername(text)}
         />
       </View>
       <View style={styles.inputView}>
         <Input
-          secureTextEntry
+          secureTextEntry={secureTextEntry}
           style={styles.inputText}
           placeholder={Strings.PASSWORD_PLACEHOLDER}
+          accessoryRight={renderIcon}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
-      <Button style={styles.loginBtn} appearance={'filled'} activeOpacity={0.2}>
-        {Strings.LOGIN_BTN}
+      <CheckBox
+        checked={rememberMe}
+        onChange={() => setRememberMe(!rememberMe)}>
+        {Strings.REMEMBER_ME}
+      </CheckBox>
+      <Button
+        style={styles.loginBtn}
+        appearance={'filled'}
+        activeOpacity={0.5}
+        disabled={!buttonUsable}
+        onPress={() => handleLogin()}>
+        {buttonContent}
       </Button>
     </Layout>
   );

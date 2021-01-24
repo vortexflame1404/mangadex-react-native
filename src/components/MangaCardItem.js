@@ -1,23 +1,19 @@
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-  View,
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, Dimensions, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { Text } from '@ui-kitten/components';
 
-export default function ({ uri }) {
+export default function ({ uri, title, onPress }) {
   const { width, height } = Dimensions.get('window');
-  const sizeHeight = height / 4;
+  const sizeHeight = height / 3;
   const sizeWidth = width / 3;
 
   return (
-    <View style={{ flexDirection: 'column', flex: 1 }}>
+    <View style={styles.container}>
       <TouchableOpacity
-        style={[styles.card, { width: sizeWidth, height: sizeHeight }]}>
-        <Image
+        style={[styles.card, { width: sizeWidth, height: sizeHeight }]}
+        onPress={onPress}>
+        <FastImage
           source={{
             uri: uri,
           }}
@@ -27,8 +23,7 @@ export default function ({ uri }) {
           style={{ textAlign: 'center' }}
           numberOfLines={2}
           ellipsizeMode={'tail'}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-          sodales.
+          {title}
         </Text>
       </TouchableOpacity>
     </View>
@@ -36,6 +31,10 @@ export default function ({ uri }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    flex: 1,
+  },
   card: {
     paddingTop: 5,
     paddingStart: 5,
