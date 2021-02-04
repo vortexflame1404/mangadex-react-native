@@ -52,7 +52,6 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.isAuthenticating = false;
       state.statusText = 'Log in successfully!';
-      console.log('type of ', typeof action.payload);
     },
     [login.rejected]: (state, action) => {
       state.isAuthenticated = false;

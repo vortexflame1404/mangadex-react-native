@@ -1,41 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import MangaCard from '../../components/MangaCardItem';
 import { Layout } from '@ui-kitten/components';
 import { getFollowedMangas } from '../../api/mangadex';
+import { LibraryList } from '../../components/LibraryList';
+import { LoadingCircle } from '../../components/LoadingCircle';
 
-const renderItem = ({ item }) => (
-  <MangaCard
-    uri={item.mainCover}
-    title={item.mangaTitle}
-    onPress={() => console.log('navigate to detail')}
-  />
-);
-
-export default function LibraryScreen() {
+export default function LibraryScreen({ navigation, route }) {
   const [mangas, setMangas] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const getManga = async () => {
+    const followedMangas = async () => {
       try {
+        setLoading(true);
         const response = await getFollowedMangas();
         setMangas(response.data.data);
       } catch (e) {
-        console.log('error', e.message);
+        if (e.response) {
+          console.log(e.response.status);
+        } else if (e.request) {
+          console.log(e.request);
+        } else {
+          console.log('errror', e.message);
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
-    getManga();
-  }, []);
+    followedMangas();
+  }, [navigation]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // The screen is focused
+  //     // Call any action
+  //     console.log('library is focused');
+  //   });
+  //
+  //   // Return the function to unsubscribe from the event so it gets removed on unmount
+  //   return unsubscribe;
+  // }, [navigation]);
+
+  const renderItem = ({ item }) => (
+    <MangaCard
+      uri={item.mainCover}
+      title={item.mangaTitle}
+      mangaId={item.mangaId}
+    />
+  );
 
   return (
     <Layout style={styles.container}>
-      <FlatList
-        data={mangas}
-        numColumns={3}
-        keyExtractor={(item) => item.mangaId}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <LoadingCircle />
+      ) : (
+        <LibraryList data={mangas} renderItem={renderItem} />
+      )}
     </Layout>
   );
 }

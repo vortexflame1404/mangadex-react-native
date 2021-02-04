@@ -18,7 +18,7 @@ const DownloadIcon = (props) => {
   );
 };
 
-export default function ({ item, index }) {
+export const ChapterListItem = ({ item }) => {
   const vol = item.volume ? `Vol ${item.volume} ` : '';
   const title = item.title ? ` - ${item.title}` : '';
 
@@ -29,6 +29,7 @@ export default function ({ item, index }) {
         timestampToString(item.timestamp) + '   ◈   ' + languages[item.language]
       }
       accessoryRight={DownloadIcon}
+      onPress={() => console.log('id and hash', item.id + ' ' + item.hash)}
     />
   );
-}
+};

@@ -9,14 +9,13 @@ import {
   selectIsAuthenticated,
 } from '../redux/authSlices';
 import LoginScreen from '../screens/LoginScreen';
-import { BottomTabAppNavigator } from './BottomTabNavigator';
+import { TopStackNavigator } from './TopStackNavigator';
 
 export const RootNavigator = () => {
   const auth = useSelector(selectIsAuthenticated);
   const authStatusText = useSelector(selectAuthStatusText);
   const authError = useSelector(selectAuthError);
   const dispatch = useDispatch();
-  console.log(auth);
 
   const toast = authStatusText || authError;
 
@@ -38,7 +37,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      {!auth ? <LoginScreen /> : <BottomTabAppNavigator />}
+      {!auth ? <LoginScreen /> : <TopStackNavigator />}
     </NavigationContainer>
   );
 };
