@@ -6,6 +6,8 @@ import { MangaHeader } from '../../components/MangaHeader';
 import { getChaptersOfManga, getMangaDetails } from '../../api/mangadex';
 import { filterChapter, mangaDetailsParser } from '../../parser/ApiMangaParser';
 import { LoadingCircle } from '../../components/LoadingCircle';
+import { useSelector } from 'react-redux';
+import { ErrorComponent } from '../../components/ErrorComponent';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
 
@@ -14,6 +16,8 @@ export default function MangaDetailScreen({ navigation, route }) {
   const [chapters, setChapters] = useState(null);
   const [manga, setManga] = useState(null);
   const [loading, setLoading] = useState(true);
+  const errorMessage = useSelector((state) => state.errors.message);
+  const errorCode = useSelector((state) => state.errors.code);
 
   const renderHeader = () => <MangaHeader manga={manga} />;
   useEffect(() => {
@@ -41,19 +45,21 @@ export default function MangaDetailScreen({ navigation, route }) {
     detailsOfManga();
   }, [mangaId]);
 
+  const content = errorMessage ? (
+    <ErrorComponent code={errorCode} message={errorMessage} />
+  ) : (
+    <List
+      data={chapters}
+      renderItem={renderItem}
+      ItemSeparatorComponent={Divider}
+      keyExtractor={(item) => item.id.toString()}
+      ListHeaderComponent={renderHeader}
+    />
+  );
+
   return (
     <Layout style={styles.container}>
-      {loading ? (
-        <LoadingCircle />
-      ) : (
-        <List
-          data={chapters}
-          renderItem={renderItem}
-          ItemSeparatorComponent={Divider}
-          keyExtractor={(item) => item.id.toString()}
-          ListHeaderComponent={renderHeader}
-        />
-      )}
+      {loading ? <LoadingCircle /> : content}
     </Layout>
   );
 }
