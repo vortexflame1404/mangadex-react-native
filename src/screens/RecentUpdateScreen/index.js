@@ -1,48 +1,72 @@
-import React from 'react';
-import { View } from 'react-native';
-import { Text, Layout, Icon, useTheme } from '@ui-kitten/components';
+import React, { useEffect, useState } from 'react';
+import { View, SectionList } from 'react-native';
+import { Text, Layout, Divider } from '@ui-kitten/components';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFollowedUpdates } from '../../api/mangadex';
+import { followedUpdatesParser } from '../../parser/ApiUpdatesParser';
+import { setError, unsetError } from '../../redux/errorsSlice';
+import { ErrorComponent } from '../../components/ErrorComponent';
+import { LoadingCircle } from '../../components/LoadingCircle';
+import { UpdatesChapterListItem } from '../../components/UpdatesChapterListItem';
 
-const data = {
-  rating: 9.39,
-  users: 8180,
-  views: 2269061,
-  follows: 71251,
-};
+export default function RecentUpdateScreen({ navigation, route }) {
+  const [updates, setUpdates] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const errorMessage = useSelector((state) => state.errors.message);
+  const errorCode = useSelector((state) => state.errors.code);
 
-export default function RecentUpdateScreen(props) {
-  const theme = useTheme();
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        setLoading(true);
+        dispatch(unsetError());
+        const response = await getFollowedUpdates();
+        setUpdates(followedUpdatesParser(response.data.data));
+      } catch (e) {
+        if (e.response) {
+          const { status, data } = e.response;
+          dispatch(setError({ code: status, message: 'Error w/ server' }));
+          console.log(data);
+        } else if (e.request) {
+          dispatch(setError({ code: 503, message: 'Error w/ making request' }));
+          console.log(e.request);
+        } else {
+          console.log('errror', e.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getData();
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log(updates);
+  }, [updates]);
+
+  const renderItem = ({ item }) => <UpdatesChapterListItem item={item} />;
+  const renderSectionHeader = ({ section: { title } }) => (
+    <View style={{ alignSelf: 'center' }}>
+      <Text category={'h5'}>{title}</Text>
+    </View>
+  );
+
+  const content = errorMessage ? (
+    <ErrorComponent message={errorMessage} code={errorCode} />
+  ) : (
+    <SectionList
+      sections={updates}
+      keyExtractor={(item, index) => item + index}
+      renderItem={renderItem}
+      renderSectionHeader={renderSectionHeader}
+      ItemSeparatorComponent={Divider}
+      SectionSeparatorComponent={Divider}
+    />
+  );
 
   return (
-    <Layout style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text category={'h1'}>Update Screen</Text>
-      <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-        <Icon
-          name={'bar-chart'}
-          fill={theme['color-primary-default']}
-          style={{ height: 20, width: 20, marginEnd: 10 }}
-        />
-        <Text>{data.rating}</Text>
-        <Icon
-          name={'people'}
-          fill={theme['color-primary-default']}
-          style={{ height: 20, width: 20, marginEnd: 10 }}
-        />
-        <Text>{data.users}</Text>
-      </View>
-      <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-        <Icon
-          name={'eye'}
-          fill={theme['color-primary-default']}
-          style={{ height: 20, width: 20, marginEnd: 10 }}
-        />
-        <Text>{data.views}</Text>
-        <Icon
-          name={'bookmark'}
-          fill={theme['color-primary-default']}
-          style={{ height: 20, width: 20, marginEnd: 10 }}
-        />
-        <Text>{data.follows}</Text>
-      </View>
-    </Layout>
+    <Layout style={{ flex: 1 }}>{loading ? <LoadingCircle /> : content}</Layout>
   );
 }

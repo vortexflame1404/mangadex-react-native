@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Icon, ListItem, useTheme } from '@ui-kitten/components';
-import { timestampToString } from '../utils';
+import { calculateDistanceFromTimestampToNow } from '../utils';
 import languages from '../assets/languages';
 
 const DownloadIcon = (props) => {
@@ -26,7 +26,9 @@ export const ChapterListItem = ({ item }) => {
     <ListItem
       title={vol + `Ch. ${item.chapter}` + title}
       description={
-        timestampToString(item.timestamp) + '   ◈   ' + languages[item.language]
+        calculateDistanceFromTimestampToNow(item.timestamp) +
+        '   ◈   ' +
+        languages[item.language]
       }
       accessoryRight={DownloadIcon}
       onPress={() => console.log('id and hash', item.id + ' ' + item.hash)}

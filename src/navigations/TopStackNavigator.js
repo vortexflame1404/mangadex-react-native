@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTheme } from '@ui-kitten/components';
-import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import MangaDetailScreen from '../screens/MangaDetailScreen';
 import { BottomTabAppNavigator } from './BottomTabAppNavigator';
 import { getHeaderTitle } from './helpers';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const { Navigator, Screen } = createNativeStackNavigator();
+const { Navigator, Screen } = createStackNavigator();
 
 export const TopStackNavigator = (props) => {
   const theme = useTheme();
@@ -16,6 +16,7 @@ export const TopStackNavigator = (props) => {
       screenOptions={{
         headerStyle: { backgroundColor: theme['background-basic-color-1'] },
         headerTintColor: theme['text-basic-color'],
+        headerTitleAlign: 'center',
       }}>
       <Screen
         name={'AppTab'}
@@ -25,7 +26,7 @@ export const TopStackNavigator = (props) => {
       <Screen
         name={'Manga'}
         component={MangaDetailScreen}
-        options={({ route }) => ({ headerTitle: getHeaderTitle(route) })}
+        options={{ headerTitle: 'Details' }}
       />
     </Navigator>
   );

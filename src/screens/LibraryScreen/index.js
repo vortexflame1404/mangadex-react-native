@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Layout, Icon, useTheme } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFollowedMangas } from '../../api/mangadex';
+import { getCurrentFollowedMangas } from '../../api/mangadex';
 import MangaCard from '../../components/MangaCardItem';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { setError, unsetError } from '../../redux/errorsSlice';
@@ -56,7 +56,7 @@ export default function LibraryScreen({ navigation, route }) {
       try {
         setLoading(true);
         dispatch(unsetError());
-        const response = await getFollowedMangas();
+        const response = await getCurrentFollowedMangas();
         setMangas(response.data.data);
       } catch (e) {
         if (e.response) {
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
   goToTopButton: {
     //Here is the trick
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
     width: 50,

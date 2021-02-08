@@ -133,12 +133,23 @@ String.prototype.replaceAll = function (strReplace: String, strWith) {
   return this.replace(reg, strWith);
 };
 
-// calculate time to now
+// timestamp to String
 export const timestampToString = (timestamp) => {
+  return format(fromUnixTime(timestamp), 'd MMM y');
+};
+
+// calculate time to now
+export const calculateDistanceFromTimestampToNow = (timestamp) => {
   const uploadedDate = fromUnixTime(timestamp);
   const sevenDaysAgo = sub(new Date(), { weeks: 1 });
   if (isAfter(uploadedDate, sevenDaysAgo)) {
-    return formatDistanceToNow(uploadedDate, { addSuffix: true });
+    const distanceToNow = formatDistanceToNow(uploadedDate, {
+      addSuffix: true,
+    });
+    if (distanceToNow === '1 day ago') {
+      return 'yesterday';
+    }
+    return distanceToNow;
   }
-  return format(uploadedDate, 'd MMM y');
+  return timestampToString(timestamp);
 };

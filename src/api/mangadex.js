@@ -32,8 +32,12 @@ export const postLogin = async (username, password, remember_me) => {
   );
 };
 
-export const getFollowedMangas = async () => {
-  return await mangadexAPI.get('/user/me/followed-manga');
+export const getCurrentFollowedMangas = async () => {
+  return await mangadexAPI.get('/user/me/followed-manga', {
+    params: {
+      type: 1,
+    },
+  });
 };
 
 export const getMangaDetails = async (mangaId) => {
@@ -45,7 +49,11 @@ export const getChaptersOfManga = async (mangaId) => {
 };
 
 export const getFollowedUpdates = async () => {
-  return await mangadexAPI.get('/user/me/followed-updates');
+  return await mangadexAPI.get('/user/me/followed-updates', {
+    params: {
+      type: 1,
+    },
+  });
 };
 
 export const postLogout = async () =>

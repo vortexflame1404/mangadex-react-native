@@ -7,6 +7,15 @@ const status = {
   4: 'Hiatus',
 };
 
+const followTypes = {
+  1: 'Reading',
+  2: 'Completed',
+  3: 'On hold',
+  4: 'Plan to read',
+  5: 'Dropped',
+  6: 'Re-reading',
+};
+
 const demographics = {
   1: 'Shounen',
   2: 'Shoujo',
@@ -16,13 +25,9 @@ const demographics = {
 
 export const mangaDetailsParser = (mangaResponse) => {
   const manga = {};
-  console.log('inside parser');
   manga.id = mangaResponse.id;
   manga.title = mangaResponse.title;
   manga.description = cleanDescription(mangaResponse.description);
-  // manga.artist = mangaResponse.artist.join(', ');
-  // manga.author = mangaResponse.author.join(', ');
-  // console.log('author + artist', author + artist);
   const { author, artist } = mangaResponse;
   author.push(artist);
   const seenTemp = {};
