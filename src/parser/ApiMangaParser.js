@@ -24,41 +24,43 @@ const demographics = {
 };
 
 export const mangaDetailsParser = (mangaResponse) => {
-  const manga = {};
-  manga.id = mangaResponse.id;
-  manga.title = mangaResponse.title;
-  manga.description = cleanDescription(mangaResponse.description);
+  const mangaObject = {};
+  mangaObject.id = mangaResponse.id;
+  mangaObject.title = mangaResponse.title;
+  mangaObject.description = cleanDescription(mangaResponse.description);
   const { author, artist } = mangaResponse;
   author.push(artist);
   const seenTemp = {};
   // filter same artist and author
-  manga.authorAndArtist = author
+  mangaObject.authorAndArtist = author
     .filter((item) => {
       return seenTemp.hasOwnProperty(item) ? false : (seenTemp[item] = true);
     })
     .join(', ');
-  manga.thumbnail_url = mangaResponse.mainCover;
+  mangaObject.thumbnail_url = mangaResponse.mainCover;
 
   if (mangaResponse.publication) {
-    manga.status = status[mangaResponse.publication.status]
+    mangaObject.status = status[mangaResponse.publication.status]
       ? status[mangaResponse.publication.status]
       : 'Unknown';
-    manga.demographics = demographics[mangaResponse.publication.demographic]
+    mangaObject.demographics = demographics[
+      mangaResponse.publication.demographic
+    ]
       ? demographics[mangaResponse.publication.demographic]
       : null;
   }
 
   if (mangaResponse.rating) {
-    manga.rating = mangaResponse.rating.bayesian
+    mangaObject.rating = mangaResponse.rating.bayesian
       ? mangaResponse.rating.bayesian
       : mangaResponse.rating.mean;
-    manga.users = mangaResponse.rating.users;
+    mangaObject.users = mangaResponse.rating.users;
   }
 
-  manga.views = mangaResponse.views;
-  manga.follows = mangaResponse.follows;
+  mangaObject.views = mangaResponse.views;
+  mangaObject.follows = mangaResponse.follows;
 
-  return manga;
+  return mangaObject;
 };
 
 //TODO only EN chapters for now

@@ -42,15 +42,11 @@ export default function RecentUpdateScreen({ navigation, route }) {
     getData();
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log(updates);
-  }, [updates]);
-
   const renderItem = ({ item }) => <UpdatesChapterListItem item={item} />;
   const renderSectionHeader = ({ section: { title } }) => (
-    <View style={{ alignSelf: 'center' }}>
-      <Text category={'h5'}>{title}</Text>
-    </View>
+    <Text category={'h5'} style={{ marginLeft: 10, marginTop: 10 }}>
+      {title}
+    </Text>
   );
 
   const content = errorMessage ? (

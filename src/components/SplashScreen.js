@@ -1,12 +1,8 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { Layout } from '@ui-kitten/components';
+import Logo from '../assets/Logo';
 
 export const SplashScreen = () => {
-  const { height } = Dimensions.get('window');
-  const imageSize = height / 6;
-
   return (
     <Layout
       style={{
@@ -15,13 +11,7 @@ export const SplashScreen = () => {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <FastImage
-        source={require('../assets/logo.png')}
-        style={{
-          width: imageSize,
-          height: imageSize,
-        }}
-      />
+      <Logo />
     </Layout>
   );
 };

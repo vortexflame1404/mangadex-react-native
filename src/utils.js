@@ -90,6 +90,7 @@ const englishDescriptionTags = [
 
 export const cleanString = (string = '') => {
   const bbRegEx = /\[(\w+)[^]]*](.*?)\[\1]/;
+  const urlRegEx = /\burl=.*]\b/;
 
   let intermediate = string
     .replaceAll('[list]', '')
@@ -99,7 +100,16 @@ export const cleanString = (string = '') => {
     .replaceAll('[u]', '')
     .replaceAll('[/u]', '')
     .replaceAll('[b]', '')
-    .replaceAll('[/b]', '');
+    .replaceAll('[/b]', '')
+    .replaceAll('[i]', '')
+    .replaceAll('[/i]', '')
+    .replaceAll('[/url]', '')
+    .replace(urlRegEx, '')
+    .replaceAll('[', '');
+
+  while (urlRegEx.exec(intermediate)) {
+    intermediate = intermediate.replace(urlRegEx, '');
+  }
 
   while (bbRegEx.exec(intermediate)) {
     intermediate = intermediate.replace(bbRegEx, '$2');
