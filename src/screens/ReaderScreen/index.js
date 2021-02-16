@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ToastAndroid } from 'react-native';
-import { Layout, ViewPager } from '@ui-kitten/components';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { ToastAndroid, View } from 'react-native';
+import { Layout, Text, ViewPager } from '@ui-kitten/components';
 import { useDispatch } from 'react-redux';
 import { getChapterDetails, postSetChapterToRead } from '../../api/mangadex';
 import { setError, unsetError } from '../../redux/errorsSlice';
@@ -49,7 +49,6 @@ export const ReaderScreen = ({ navigation, route }) => {
         const response = await postSetChapterToRead(chapterId);
         if (response.status === 200) {
           ToastAndroid.show('end of chapter', ToastAndroid.SHORT);
-          console.log('end of chapter');
         }
       } catch (e) {
         if (e.response) {
@@ -84,6 +83,13 @@ export const ReaderScreen = ({ navigation, route }) => {
           <LoadingCircle />
         )}
       </ViewPager>
+      {chapter ? (
+        <View style={{ alignSelf: 'center', paddingBottom: 10 }}>
+          <Text category={'s1'}>{`${selectedIndex + 1}/${
+            chapter.pageLength
+          }`}</Text>
+        </View>
+      ) : null}
     </Layout>
   );
 };

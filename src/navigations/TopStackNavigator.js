@@ -5,10 +5,11 @@ import { BottomTabAppNavigator } from './BottomTabAppNavigator';
 import { getHeaderTitle } from './helpers';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ReaderScreen } from '../screens/ReaderScreen';
+import { ReaderScreenHeader } from '../components/ReaderScreenHeader';
 
 const { Navigator, Screen } = createStackNavigator();
 
-export const TopStackNavigator = (props) => {
+export const TopStackNavigator = () => {
   const theme = useTheme();
 
   return (
@@ -29,7 +30,22 @@ export const TopStackNavigator = (props) => {
         component={MangaDetailScreen}
         options={{ headerTitle: 'Details' }}
       />
-      <Screen name={'Reader'} component={ReaderScreen} />
+      <Screen
+        name={'Reader'}
+        component={ReaderScreen}
+        options={({ route }) => ({
+          headerTitle: (props) => {
+            return (
+              <ReaderScreenHeader
+                {...props}
+                mangaTitle={route.params.mangaTitle}
+                chapterTitle={route.params.chapterTitle}
+              />
+            );
+          },
+          headerTitleAlign: 'left',
+        })}
+      />
     </Navigator>
   );
 };

@@ -28,6 +28,8 @@ export const UpdatesChapterListItem = ({ item }) => {
       onPress={() =>
         navigation.navigate('Reader', {
           chapterId: id,
+          mangaTitle: mangaTitle,
+          chapterTitle: `${volumeString}Ch.${chapter}${titleString}`,
         })
       }
     />
