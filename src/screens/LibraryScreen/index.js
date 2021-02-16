@@ -52,7 +52,7 @@ export default function LibraryScreen({ navigation, route }) {
   };
 
   useEffect(() => {
-    const followedMangas = async () => {
+    const getData = async () => {
       try {
         setLoading(true);
         dispatch(unsetError());
@@ -74,7 +74,7 @@ export default function LibraryScreen({ navigation, route }) {
       }
     };
 
-    followedMangas();
+    getData();
   }, [dispatch]);
 
   const content = errorMessage ? (

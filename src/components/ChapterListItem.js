@@ -3,6 +3,7 @@ import { TouchableOpacity } from 'react-native';
 import { Icon, ListItem, useTheme } from '@ui-kitten/components';
 import { calculateDistanceFromTimestampToNow } from '../utils';
 import languages from '../assets/languages';
+import { useNavigation } from '@react-navigation/core';
 
 const DownloadIcon = (props) => {
   const theme = useTheme();
@@ -19,6 +20,7 @@ const DownloadIcon = (props) => {
 };
 
 export const ChapterListItem = ({ item }) => {
+  const navigation = useNavigation();
   const vol = item.volume ? `Vol ${item.volume} ` : '';
   const title = item.title ? ` - ${item.title}` : '';
 
@@ -31,7 +33,11 @@ export const ChapterListItem = ({ item }) => {
         languages[item.language]
       }
       accessoryRight={DownloadIcon}
-      onPress={() => console.log('id and hash', item.id + ' ' + item.hash)}
+      onPress={() =>
+        navigation.navigate('Reader', {
+          chapterId: item.id,
+        })
+      }
     />
   );
 };

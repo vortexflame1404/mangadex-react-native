@@ -6,8 +6,9 @@ import { MangaHeader } from '../../components/MangaHeader';
 import { getChaptersOfManga, getMangaDetails } from '../../api/mangadex';
 import { filterChapter, mangaDetailsParser } from '../../parser/ApiMangaParser';
 import { LoadingCircle } from '../../components/LoadingCircle';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ErrorComponent } from '../../components/ErrorComponent';
+import { setError } from '../../redux/errorsSlice';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
 
@@ -16,12 +17,14 @@ export default function MangaDetailScreen({ navigation, route }) {
   const [chapters, setChapters] = useState(null);
   const [manga, setManga] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const dispatch = useDispatch();
   const errorMessage = useSelector((state) => state.errors.message);
   const errorCode = useSelector((state) => state.errors.code);
 
   const renderHeader = () => <MangaHeader manga={manga} />;
   useEffect(() => {
-    const detailsOfManga = async () => {
+    const getData = async () => {
       try {
         setLoading(true);
         const [responseManga, responseChapters] = await Promise.all([
@@ -30,20 +33,24 @@ export default function MangaDetailScreen({ navigation, route }) {
         ]);
         setManga(mangaDetailsParser(responseManga.data.data));
         setChapters(filterChapter(responseChapters.data.data.chapters));
-        setLoading(false);
       } catch (e) {
         if (e.response) {
-          console.log(e.response.data);
+          const { status, data } = e.response;
+          dispatch(setError({ code: status, message: 'Error w/ server' }));
+          console.log(data);
         } else if (e.request) {
+          dispatch(setError({ code: 503, message: 'internal app error' }));
           console.log(e.request);
         } else {
-          console.error(e.message);
+          console.log('errror', e.message);
         }
+      } finally {
+        setLoading(false);
       }
     };
 
-    detailsOfManga();
-  }, [mangaId]);
+    getData();
+  }, [dispatch, mangaId]);
 
   const content = errorMessage ? (
     <ErrorComponent code={errorCode} message={errorMessage} />

@@ -4,6 +4,7 @@ import MangaDetailScreen from '../screens/MangaDetailScreen';
 import { BottomTabAppNavigator } from './BottomTabAppNavigator';
 import { getHeaderTitle } from './helpers';
 import { createStackNavigator } from '@react-navigation/stack';
+import { ReaderScreen } from '../screens/ReaderScreen';
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -28,6 +29,7 @@ export const TopStackNavigator = (props) => {
         component={MangaDetailScreen}
         options={{ headerTitle: 'Details' }}
       />
+      <Screen name={'Reader'} component={ReaderScreen} />
     </Navigator>
   );
 };

@@ -6,6 +6,7 @@ const mangadexAPI = axios.create({
   timeout: 5000,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
+    'Content-Type': 'application/json',
   },
 });
 
@@ -46,6 +47,21 @@ export const getMangaDetails = async (mangaId) => {
 
 export const getChaptersOfManga = async (mangaId) => {
   return await mangadexAPI.get(`/manga/${mangaId}/chapters`);
+};
+
+export const getChapterDetails = async (chapterId) => {
+  return await mangadexAPI.get(`/chapter/${chapterId}`, {
+    params: {
+      mark_read: false,
+    },
+  });
+};
+
+export const postSetChapterToRead = async (chapterId) => {
+  return await mangadexAPI.post('/user/me/marker', {
+    chapters: [chapterId],
+    read: true,
+  });
 };
 
 export const getFollowedUpdates = async () => {

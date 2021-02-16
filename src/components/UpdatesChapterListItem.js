@@ -1,14 +1,15 @@
 import React from 'react';
 import { Avatar, ListItem } from '@ui-kitten/components';
 import FastImage from 'react-native-fast-image';
-import { timestampToString } from '../utils';
+import { useNavigation } from '@react-navigation/core';
 
 const MangaThumbnail = ({ url }) => (
   <Avatar shape={'rounded'} source={{ uri: url }} ImageComponent={FastImage} />
 );
 
 export const UpdatesChapterListItem = ({ item }) => {
-  const { mangaTitle, volume, chapter, title, thumbnail_url } = item;
+  const navigation = useNavigation();
+  const { mangaTitle, volume, chapter, title, thumbnail_url, id } = item;
   let volumeString = '';
   let titleString = '';
 
@@ -24,6 +25,11 @@ export const UpdatesChapterListItem = ({ item }) => {
       title={mangaTitle}
       description={`${volumeString}Ch.${chapter}${titleString}`}
       accessoryLeft={renderThumbnail}
+      onPress={() =>
+        navigation.navigate('Reader', {
+          chapterId: id,
+        })
+      }
     />
   );
 };
