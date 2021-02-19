@@ -39,6 +39,8 @@ const renderItem = ({ item }) => (
   />
 );
 
+const keyExtractor = ({ mangaId }) => mangaId.toString();
+
 export default function LibraryScreen({ navigation, route }) {
   const [mangas, setMangas] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -84,7 +86,7 @@ export default function LibraryScreen({ navigation, route }) {
       ref={ref}
       data={mangas}
       numColumns={3}
-      keyExtractor={(item) => item.mangaId}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
       style={{ marginBottom: 10 }}
     />

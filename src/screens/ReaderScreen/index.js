@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ToastAndroid, View } from 'react-native';
 import { Layout, Text, ViewPager } from '@ui-kitten/components';
 import { useDispatch } from 'react-redux';
@@ -68,6 +68,15 @@ export const ReaderScreen = ({ navigation, route }) => {
     }
   }, [chapter, chapterId, selectedIndex]);
 
+  const content = useMemo(() => {
+    if (chapter) {
+      return chapter.pagesUrl.map((value) => (
+        <ChapterPage key={value} pageUrl={value} />
+      ));
+    }
+    return null;
+  }, [chapter]);
+
   return (
     <Layout style={{ flex: 1 }}>
       <ViewPager
@@ -75,13 +84,7 @@ export const ReaderScreen = ({ navigation, route }) => {
         selectedIndex={selectedIndex}
         onSelect={(index) => setSelectedIndex(index)}
         shouldLoadComponent={shouldLoadComponent}>
-        {chapter ? (
-          chapter.pagesUrl.map((value) => (
-            <ChapterPage key={value} pageUrl={value} />
-          ))
-        ) : (
-          <LoadingCircle />
-        )}
+        {content || <LoadingCircle />}
       </ViewPager>
       {chapter ? (
         <View style={{ alignSelf: 'center', paddingBottom: 10 }}>

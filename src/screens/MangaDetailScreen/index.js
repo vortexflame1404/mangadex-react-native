@@ -11,6 +11,7 @@ import { ErrorComponent } from '../../components/ErrorComponent';
 import { setError } from '../../redux/errorsSlice';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
+const keyExtractor = ({ id }) => id.toString();
 
 export default function MangaDetailScreen({ navigation, route }) {
   const { mangaId } = route.params;
@@ -59,8 +60,9 @@ export default function MangaDetailScreen({ navigation, route }) {
       data={chapters}
       renderItem={renderItem}
       ItemSeparatorComponent={Divider}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={keyExtractor}
       ListHeaderComponent={renderHeader}
+      maxToRenderPerBatch={13}
     />
   );
 

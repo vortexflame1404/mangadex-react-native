@@ -32,7 +32,6 @@ export const ChapterListItem = ({ item }) => {
         '   ◈   ' +
         languages[item.language]
       }
-      accessoryRight={DownloadIcon}
       onPress={() =>
         navigation.navigate('Reader', {
           chapterId: item.id,
