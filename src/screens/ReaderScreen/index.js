@@ -1,20 +1,28 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ToastAndroid, View } from 'react-native';
-import { Layout, Text, ViewPager } from '@ui-kitten/components';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { ToastAndroid, View, Animated } from 'react-native';
+import { Layout, Text, useTheme, ViewPager } from '@ui-kitten/components';
 import { useDispatch } from 'react-redux';
 import { getChapterDetails, postSetChapterToRead } from '../../api/mangadex';
 import { setError, unsetError } from '../../redux/errorsSlice';
 import { chapterDetailsParser } from '../../parser/ApiChapterParser';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { ChapterPage } from '../../components/ChapterPage';
+import Slider from '@react-native-community/slider';
+import FastImage from 'react-native-fast-image';
+
+const AnimatedViewPager = Animated.createAnimatedComponent(ViewPager);
 
 export const ReaderScreen = ({ navigation, route }) => {
   const { chapterId } = route.params;
+  const viewPagerRef = useRef < ViewPager > null;
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [chapter, setChapter] = useState(null);
-
+  const [pageSelectBySliderFlag, setPageSelectBySliderFlag] = useState(false);
+  const theme = useTheme();
   const dispatch = useDispatch();
+
   const shouldLoadComponent = (index) => index === selectedIndex;
 
   useEffect(() => {
@@ -52,9 +60,9 @@ export const ReaderScreen = ({ navigation, route }) => {
         }
       } catch (e) {
         if (e.response) {
-          console.log(e.response.data);
+          console.log('error in response', e.response.data);
         } else if (e.request) {
-          console.log(e.request);
+          console.log('error in request', e.request);
         } else {
           console.log(e.message);
         }
@@ -70,6 +78,7 @@ export const ReaderScreen = ({ navigation, route }) => {
 
   const content = useMemo(() => {
     if (chapter) {
+      FastImage.preload(chapter.preloadUrls);
       return chapter.pagesUrl.map((value) => (
         <ChapterPage key={value} pageUrl={value} />
       ));
@@ -78,20 +87,47 @@ export const ReaderScreen = ({ navigation, route }) => {
   }, [chapter]);
 
   return (
-    <Layout style={{ flex: 1 }}>
-      <ViewPager
+    <Layout style={{ flex: 1 }} level={'4'}>
+      <AnimatedViewPager
+        ref={viewPagerRef}
         style={{ flex: 1 }}
         selectedIndex={selectedIndex}
-        onSelect={(index) => setSelectedIndex(index)}
+        onSelect={(index) => {
+          if (!pageSelectBySliderFlag) {
+            setSelectedIndex(index);
+          }
+        }}
         shouldLoadComponent={shouldLoadComponent}>
         {content || <LoadingCircle />}
-      </ViewPager>
+      </AnimatedViewPager>
       {chapter ? (
-        <View style={{ alignSelf: 'center', paddingBottom: 10 }}>
-          <Text category={'s1'}>{`${selectedIndex + 1}/${
-            chapter.pageLength
-          }`}</Text>
-        </View>
+        <>
+          <View style={{ alignSelf: 'center', paddingBottom: 5 }}>
+            <Slider
+              style={{ height: 20, width: 300 }}
+              maximumValue={chapter.pageLength}
+              minimumValue={1}
+              step={1}
+              minimumTrackTintColor={theme['color-primary-default']}
+              maximumTrackTintColor={'#FFF'}
+              thumbTintColor={theme['color-primary-default']}
+              value={selectedIndex + 1}
+              onSlidingStart={() => setPageSelectBySliderFlag(true)}
+              onValueChange={(value) => {
+                setSelectedIndex(value - 1);
+              }}
+              onSlidingComplete={(value) => {
+                setSelectedIndex(value - 1);
+                setPageSelectBySliderFlag(false);
+              }}
+            />
+          </View>
+          <View style={{ alignSelf: 'center', paddingBottom: 10 }}>
+            <Text category={'s1'}>{`${selectedIndex + 1}/${
+              chapter.pageLength
+            }`}</Text>
+          </View>
+        </>
       ) : null}
     </Layout>
   );

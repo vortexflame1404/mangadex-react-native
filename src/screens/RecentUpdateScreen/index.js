@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, SectionList } from 'react-native';
+import { SectionList } from 'react-native';
 import { Text, Layout, Divider } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
 import { getFollowedUpdates } from '../../api/mangadex';
@@ -44,7 +44,7 @@ export default function RecentUpdateScreen({ navigation, route }) {
 
   const renderItem = ({ item }) => <UpdatesChapterListItem item={item} />;
   const renderSectionHeader = ({ section: { title } }) => (
-    <Text category={'h5'} style={{ marginLeft: 10, marginTop: 10 }}>
+    <Text category={'h5'} style={{ marginLeft: 10, marginVertical: 5 }}>
       {title}
     </Text>
   );

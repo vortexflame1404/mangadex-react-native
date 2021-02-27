@@ -20,6 +20,10 @@ export const chapterDetailsParser = (chapterResponse) => {
     pagesUrlFallback.push(`${serverFallback}/${hash}/${item}`);
   });
   chapterObject.pagesUrl = pagesUrl;
+
+  const preloadUrls = [];
+  pagesUrl.map((value) => preloadUrls.push({ uri: value }));
+  chapterObject.preloadUrls = preloadUrls;
   chapterObject.pagesUrlFallback = pagesUrlFallback;
   chapterObject.pageLength = pagesUrl.length;
 
