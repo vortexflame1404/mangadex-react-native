@@ -1,12 +1,21 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  ToastAndroid,
+  TouchableOpacity,
+} from 'react-native';
 import { Layout, Icon, useTheme } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCurrentFollowedMangas } from '../../api/mangadex';
 import MangaCard from '../../components/MangaCardItem';
 import { LoadingCircle } from '../../components/LoadingCircle';
-import { setError, unsetError } from '../../redux/errorsSlice';
-import { ErrorComponent } from '../../components/ErrorComponent';
+import {
+  getFollowedMangas,
+  selectErrorMessage,
+  selectIsFetchingManga,
+  selectIsMangas,
+  selectMangaLists,
+} from '../../redux/mangaSlice';
 
 export const GoToTopButton = ({ handler, visible }) => {
   const theme = useTheme();
@@ -31,22 +40,16 @@ export const GoToTopButton = ({ handler, visible }) => {
   ) : null;
 };
 
-const renderItem = ({ item }) => (
-  <MangaCard
-    uri={item.mainCover}
-    title={item.mangaTitle}
-    mangaId={item.mangaId}
-  />
-);
+const renderItem = ({ item }) => <MangaCard item={item} />;
 
 const keyExtractor = ({ mangaId }) => mangaId.toString();
 
 export default function LibraryScreen({ navigation, route }) {
-  const [mangas, setMangas] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const loading = useSelector(selectIsFetchingManga);
+  const mangas = useSelector(selectMangaLists);
+  const isManga = useSelector(selectIsMangas);
+  const error = useSelector(selectErrorMessage);
   const dispatch = useDispatch();
-  const errorMessage = useSelector((state) => state.errors.message);
-  const errorCode = useSelector((state) => state.errors.code);
 
   const ref = useRef(null);
   const goToTopHandler = (listRef) => {
@@ -56,32 +59,23 @@ export default function LibraryScreen({ navigation, route }) {
   useEffect(() => {
     const getData = async () => {
       try {
-        setLoading(true);
-        dispatch(unsetError());
-        const response = await getCurrentFollowedMangas();
-        setMangas(response.data.data);
+        dispatch(getFollowedMangas());
+        console.log('dispatch is called ');
+        // dispatch(setManga({ raw: response.data.results }));
       } catch (e) {
-        if (e.response) {
-          const { status, data } = e.response;
-          dispatch(setError({ code: status, message: 'Error w/ server' }));
-          console.log(data);
-        } else if (e.request) {
-          dispatch(setError({ code: 503, message: 'internal app error' }));
-          console.log(e.request);
-        } else {
-          console.log('errror', e.message);
-        }
-      } finally {
-        setLoading(false);
+        console.log('get data library ', e.message);
       }
     };
-
     getData();
   }, [dispatch]);
 
-  const content = errorMessage ? (
-    <ErrorComponent message={errorMessage} code={errorCode} />
-  ) : (
+  useEffect(() => {
+    if (error) {
+      ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
+  }, [error]);
+
+  const content = (
     <FlatList
       ref={ref}
       data={mangas}
@@ -95,7 +89,7 @@ export default function LibraryScreen({ navigation, route }) {
   return (
     <Layout style={styles.container}>
       {loading ? <LoadingCircle /> : content}
-      <GoToTopButton handler={() => goToTopHandler(ref)} visible={true} />
+      <GoToTopButton handler={() => goToTopHandler(ref)} visible={isManga} />
     </Layout>
   );
 }

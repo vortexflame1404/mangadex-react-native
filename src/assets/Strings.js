@@ -8,7 +8,5 @@ export default {
 
   /// CONSTANT STRING ///
   baseUrl: 'https://mangadex.org',
-  apiUrl: 'https://mangadex.org/api/v2',
-  loginUrl: '/ajax/actions.ajax.php?function=login',
-  followedAllApi: '/user/me/followed-manga',
+  apiUrl: 'https://api.mangadex.org/',
 };

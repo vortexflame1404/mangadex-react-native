@@ -109,8 +109,8 @@ export const cleanString = (string = '') => {
   return decode(intermediate);
 };
 
-export const cleanDescription = (description: String) => {
-  let newDescription = description.toString();
+export const cleanDescription = (description) => {
+  let newDescription = description;
   descriptionLanguages.forEach((item) => {
     if (newDescription.indexOf(item) > 0) {
       newDescription = newDescription.substring(
@@ -137,12 +137,12 @@ String.prototype.replaceAll = function (strReplace: String, strWith) {
 
 // timestamp to String
 export const timestampToString = (timestamp) => {
-  return format(fromUnixTime(timestamp), 'd MMM y');
+  return format(new Date(timestamp), 'd MMM y');
 };
 
 // calculate time to now
 export const calculateDistanceFromTimestampToNow = (timestamp) => {
-  const uploadedDate = fromUnixTime(timestamp);
+  const uploadedDate = new Date(timestamp);
   const sevenDaysAgo = sub(new Date(), { weeks: 1 });
   if (isAfter(uploadedDate, sevenDaysAgo)) {
     const distanceToNow = formatDistanceToNow(uploadedDate, {

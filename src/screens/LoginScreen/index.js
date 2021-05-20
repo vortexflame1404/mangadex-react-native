@@ -8,7 +8,6 @@ import {
   useTheme,
   Icon,
   Spinner,
-  CheckBox,
 } from '@ui-kitten/components';
 import Strings from '../../assets/Strings';
 import styles from './styles';
@@ -22,8 +21,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 
 export default function LoginScreen({ navigation, route }) {
   const [username, setUsername] = useState('thangle');
-  const [password, setPassword] = useState('thang01287539959');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [password, setPassword] = useState('Th1s1sM4ng4D3x4cC0unt');
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -53,9 +51,7 @@ export default function LoginScreen({ navigation, route }) {
   }
   const handleLogin = async () => {
     try {
-      const resultAction = await dispatch(
-        login({ username, password, remember_me: rememberMe }),
-      );
+      const resultAction = await dispatch(login({ username, password }));
       unwrapResult(resultAction);
     } catch (e) {
       console.log('login failed', e.message);
@@ -87,11 +83,6 @@ export default function LoginScreen({ navigation, route }) {
           onChangeText={(text) => setPassword(text)}
         />
       </View>
-      <CheckBox
-        checked={rememberMe}
-        onChange={() => setRememberMe(!rememberMe)}>
-        {Strings.REMEMBER_ME}
-      </CheckBox>
       <Button
         style={styles.loginBtn}
         appearance={'filled'}

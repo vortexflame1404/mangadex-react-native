@@ -11,13 +11,15 @@ import { enableScreens } from 'react-native-screens';
 
 enableScreens(true);
 
-export default () => (
-  <>
-    <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
-      <Provider store={store}>
-        <RootNavigator />
-      </Provider>
-    </ApplicationProvider>
-  </>
-);
+export default function App() {
+  return (
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
+        <Provider store={store}>
+          <RootNavigator />
+        </Provider>
+      </ApplicationProvider>
+    </>
+  );
+}

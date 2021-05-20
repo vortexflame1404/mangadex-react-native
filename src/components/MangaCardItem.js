@@ -4,7 +4,8 @@ import FastImage from 'react-native-fast-image';
 import { Text } from '@ui-kitten/components';
 import { useNavigation } from '@react-navigation/core';
 
-export default function ({ uri, title, mangaId }) {
+export default function ({ item }) {
+  const { uri, title, mangaId, description, other } = item;
   const { width, height } = Dimensions.get('window');
   const sizeHeight = height / 3;
   const sizeWidth = width / 3;
@@ -16,13 +17,16 @@ export default function ({ uri, title, mangaId }) {
       onPress={() =>
         navigation.navigate('Manga', {
           mangaId: mangaId,
+          title,
+          description,
+          other,
+          uri,
         })
       }>
       <FastImage
-        source={{
-          uri: uri,
-        }}
+        source={{ uri: uri }}
         style={styles.image}
+        defaultSource={require('../assets/cover_placeholder.png')}
       />
       <Text
         style={{ textAlign: 'center' }}

@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ToastAndroid } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  checkAuth,
+  authWhenLaunch,
   selectAuthError,
   selectAuthStatusText,
   selectIsAuthenticated,
+  selectIsAuthenticating,
 } from '../redux/authSlices';
 import LoginScreen from '../screens/LoginScreen';
-import { TopStackNavigator } from './TopStackNavigator';
+import TopStackNavigator from './TopStackNavigator';
 import { SplashScreen } from '../components/SplashScreen';
 
 export const RootNavigator = () => {
-  const [loading, setLoading] = useState(false);
+  const loading = useSelector(selectIsAuthenticating);
   const auth = useSelector(selectIsAuthenticated);
   const authStatusText = useSelector(selectAuthStatusText);
   const authError = useSelector(selectAuthError);
@@ -28,12 +29,11 @@ export const RootNavigator = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        setLoading(true);
-        await dispatch(checkAuth());
+        dispatch(authWhenLaunch());
+        console.log('root nav after auth launch');
       } catch (e) {
-        console.log(e.message);
-      } finally {
-        setLoading(false);
+        console.log('root nav');
+        console.log(e);
       }
     };
 

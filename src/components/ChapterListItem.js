@@ -4,6 +4,8 @@ import { Icon, ListItem, Text, useTheme } from '@ui-kitten/components';
 import { calculateDistanceFromTimestampToNow } from '../utils';
 import languages from '../assets/languages';
 import { useNavigation } from '@react-navigation/core';
+import { useSelector } from 'react-redux';
+import { selectSelectedManga } from '../redux/mangaSlice';
 
 const DownloadIcon = (props) => {
   const theme = useTheme();
@@ -21,6 +23,7 @@ const DownloadIcon = (props) => {
 
 export const ChapterListItem = ({ item }) => {
   const navigation = useNavigation();
+  const manga = useSelector(selectSelectedManga);
   const vol = item.volume ? `Vol ${item.volume} ` : '';
   const title = item.title ? ` - ${item.title}` : '';
 
@@ -39,23 +42,28 @@ export const ChapterListItem = ({ item }) => {
       numberOfLines={1}
       ellipsizeMode={'tail'}
       style={{ marginHorizontal: 5 }}>
-      {calculateDistanceFromTimestampToNow(item.timestamp) +
+      {calculateDistanceFromTimestampToNow(item.updatedAt) +
         '   ◈   ' +
-        languages[item.language]}
+        languages[item.translatedLanguage]}
     </Text>
   );
+
+  const chapterSelectHandler = () => {
+    navigation.navigate('Reader', {
+      chapterId: item.chapterId,
+      chapterTitle: vol + `Ch. ${item.chapter}` + title,
+      mangaTitle: manga.title,
+      hash: item.hash,
+      data: item.data,
+      dataSaver: item.dataSaver,
+    });
+  };
 
   return (
     <ListItem
       title={renderTitle}
       description={renderDescription}
-      onPress={() =>
-        navigation.navigate('Reader', {
-          chapterId: item.id,
-          chapterTitle: vol + `Ch. ${item.chapter}` + title,
-          mangaTitle: item.mangaTitle,
-        })
-      }
+      onPress={chapterSelectHandler}
     />
   );
 };

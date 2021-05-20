@@ -1,61 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { Divider, Layout, List } from '@ui-kitten/components';
 import { ChapterListItem } from '../../components/ChapterListItem';
 import { MangaHeader } from '../../components/MangaHeader';
-import { getChaptersOfManga, getMangaDetails } from '../../api/mangadex';
-import { filterChapter, mangaDetailsParser } from '../../parser/ApiMangaParser';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { useDispatch, useSelector } from 'react-redux';
-import { ErrorComponent } from '../../components/ErrorComponent';
-import { setError } from '../../redux/errorsSlice';
+import {
+  getChapterList,
+  selectChapterList,
+  selectIsFetchingChapters,
+} from '../../redux/chapterSlice';
+import { setSelectedManga } from '../../redux/mangaSlice';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
-const keyExtractor = ({ id }) => id.toString();
+const keyExtractor = ({ chapterId }) => chapterId.toString();
 
 export default function MangaDetailScreen({ navigation, route }) {
-  const { mangaId } = route.params;
-  const [chapters, setChapters] = useState(null);
-  const [manga, setManga] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { mangaId, description, other, title, uri } = route.params;
+  const chapters = useSelector(selectChapterList);
+  const loading = useSelector(selectIsFetchingChapters);
 
   const dispatch = useDispatch();
-  const errorMessage = useSelector((state) => state.errors.message);
-  const errorCode = useSelector((state) => state.errors.code);
 
-  const renderHeader = () => <MangaHeader manga={manga} />;
+  const renderHeader = () => (
+    <MangaHeader manga={{ description, other, title, uri }} />
+  );
+
+  useEffect(() => {
+    dispatch(setSelectedManga({ mangaId }));
+  }, [dispatch, mangaId]);
+
   useEffect(() => {
     const getData = async () => {
       try {
-        setLoading(true);
-        const [responseManga, responseChapters] = await Promise.all([
-          getMangaDetails(mangaId),
-          getChaptersOfManga(mangaId),
-        ]);
-        setManga(mangaDetailsParser(responseManga.data.data));
-        setChapters(filterChapter(responseChapters.data.data.chapters));
+        dispatch(
+          getChapterList({ mangaId, limit: 100, offset: 0, locales: ['en'] }),
+        );
       } catch (e) {
-        if (e.response) {
-          const { status, data } = e.response;
-          dispatch(setError({ code: status, message: 'Error w/ server' }));
-          console.log(data);
-        } else if (e.request) {
-          dispatch(setError({ code: 503, message: 'internal app error' }));
-          console.log(e.request);
-        } else {
-          console.log('errror', e.message);
-        }
-      } finally {
-        setLoading(false);
+        console.log('mangadetails get chapter', e);
       }
     };
 
     getData();
   }, [dispatch, mangaId]);
 
-  const content = errorMessage ? (
-    <ErrorComponent code={errorCode} message={errorMessage} />
-  ) : (
+  const content = (
     <List
       data={chapters}
       renderItem={renderItem}

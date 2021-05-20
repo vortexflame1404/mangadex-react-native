@@ -1,31 +1,17 @@
-export const chapterDetailsParser = (chapterResponse) => {
-  let chapterObject;
-  const {
-    id,
-    hash,
-    mangaId,
-    mangaTitle,
-    volume,
-    chapter,
-    server,
-    serverFallback,
-    pages,
-  } = chapterResponse;
-  chapterObject = { id, hash, mangaId, mangaTitle, volume, chapter };
+// sample https://abcdefg.hijklmn.mangadex.network:12345/some-token/data/e199c7d73af7a58e8a4d0263f03db660/x1-b765e86d5ecbc932cf3f517a8604f6ac6d8a7f379b0277a117dc7c09c53d041e.png
+import { getBaseUrl } from '../api/mangadex';
 
-  const pagesUrl = [];
-  const pagesUrlFallback = [];
-  pages.forEach((item) => {
-    pagesUrl.push(`${server}${hash}/${item}`);
-    pagesUrlFallback.push(`${serverFallback}/${hash}/${item}`);
-  });
-  chapterObject.pagesUrl = pagesUrl;
-
-  const preloadUrls = [];
-  pagesUrl.map((value) => preloadUrls.push({ uri: value }));
-  chapterObject.preloadUrls = preloadUrls;
-  chapterObject.pagesUrlFallback = pagesUrlFallback;
-  chapterObject.pageLength = pagesUrl.length;
-
-  return chapterObject;
+export const chapterDetailsParser = async (chapterId, hash, urls) => {
+  try {
+    const { baseUrl } = (await getBaseUrl(chapterId)).data;
+    const pagesUrl = urls.map((item) => {
+      return { url: `${baseUrl}/data/${hash}/${item}` };
+    });
+    return {
+      pagesUrl,
+      pageLength: pagesUrl.length,
+    };
+  } catch (e) {
+    return Promise.reject(e);
+  }
 };

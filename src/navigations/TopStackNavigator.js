@@ -6,10 +6,11 @@ import { getHeaderTitle } from './helpers';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ReaderScreen } from '../screens/ReaderScreen';
 import { ReaderScreenHeader } from '../components/ReaderScreenHeader';
+import HeaderMenu from '../components/HeaderMenu';
 
 const { Navigator, Screen } = createStackNavigator();
 
-export const TopStackNavigator = () => {
+export default function TopStackNavigator() {
   const theme = useTheme();
 
   return (
@@ -23,7 +24,10 @@ export const TopStackNavigator = () => {
       <Screen
         name={'AppTab'}
         component={BottomTabAppNavigator}
-        options={({ route }) => ({ headerTitle: getHeaderTitle(route) })}
+        options={({ route }) => ({
+          headerTitle: getHeaderTitle(route),
+          headerRight: () => <HeaderMenu />,
+        })}
       />
       <Screen
         name={'Manga'}
@@ -34,18 +38,16 @@ export const TopStackNavigator = () => {
         name={'Reader'}
         component={ReaderScreen}
         options={({ route }) => ({
-          headerTitle: (props) => {
-            return (
-              <ReaderScreenHeader
-                {...props}
-                mangaTitle={route.params.mangaTitle}
-                chapterTitle={route.params.chapterTitle}
-              />
-            );
-          },
+          headerTitle: (props) => (
+            <ReaderScreenHeader
+              {...props}
+              mangaTitle={route.params.mangaTitle}
+              chapterTitle={route.params.chapterTitle}
+            />
+          ),
           headerTitleAlign: 'left',
         })}
       />
     </Navigator>
   );
-};
+}
