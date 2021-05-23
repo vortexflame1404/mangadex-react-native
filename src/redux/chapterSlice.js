@@ -10,11 +10,14 @@ const initialState = {
 
 export const getChapterList = createAsyncThunk(
   'chapter/getChapterList',
-  async ({ mangaId, limit, locales, offset }, { rejectedWithValue }) => {
+  async (
+    { mangaId, limit, translatedLanguage, offset },
+    { rejectedWithValue },
+  ) => {
     try {
       const responseChapters = await getChaptersOfManga(mangaId, {
         limit,
-        locales,
+        translatedLanguage,
         offset,
       });
       return chapterListParser(responseChapters.data.results);

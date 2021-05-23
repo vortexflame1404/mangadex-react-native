@@ -34,7 +34,12 @@ export default function MangaDetailScreen({ navigation, route }) {
     const getData = async () => {
       try {
         dispatch(
-          getChapterList({ mangaId, limit: 100, offset: 0, locales: ['en'] }),
+          getChapterList({
+            mangaId,
+            limit: 100,
+            offset: 0,
+            translatedLanguage: ['en'],
+          }),
         );
       } catch (e) {
         console.log('mangadetails get chapter', e);

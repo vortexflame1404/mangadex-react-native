@@ -132,13 +132,13 @@ export const getMangaDetails = async (mangaId) => {
 
 export const getChaptersOfManga = async (
   mangaId,
-  { limit, offset, locales },
+  { limit, offset, translatedLanguage },
 ) => {
   return await mangadexAPI.get(`/manga/${mangaId}/feed`, {
     params: {
       limit,
       offset,
-      locales,
+      translatedLanguage,
     },
   });
 };
