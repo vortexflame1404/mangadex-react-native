@@ -147,10 +147,18 @@ export const getBaseUrl = async (chapterId) => {
   return await mangadexAPI.get(`/at-home/server/${chapterId}`);
 };
 
-export const postSetChapterToRead = async (chapterId) => {
-  return await mangadexAPI.post('/user/me/marker', {
-    chapters: [chapterId],
-    read: true,
+export const getAuthor = async (authorId) => {
+  return await mangadexAPI.get(`/author/${authorId}`);
+};
+
+export const getCover = async (mangaId) => {
+  return await mangadexAPI.get('/cover', {
+    params: {
+      manga: mangaId,
+      order: {
+        updatedAt: 'desc',
+      },
+    },
   });
 };
 
