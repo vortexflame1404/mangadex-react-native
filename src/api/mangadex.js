@@ -151,15 +151,8 @@ export const getAuthor = async (authorId) => {
   return await mangadexAPI.get(`/author/${authorId}`);
 };
 
-export const getCover = async (mangaId) => {
-  return await mangadexAPI.get('/cover', {
-    params: {
-      manga: mangaId,
-      order: {
-        updatedAt: 'desc',
-      },
-    },
-  });
+export const getCover = async (coverId) => {
+  return await mangadexAPI.get(`/cover/${coverId}`);
 };
 
 export const getFollowedUpdates = async () => {
