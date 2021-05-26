@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -16,6 +16,8 @@ import {
   selectIsMangas,
   selectMangaLists,
 } from '../../redux/mangaSlice';
+import { useFocusEffect } from '@react-navigation/core';
+import { clearChapterList } from '../../redux/chapterSlice';
 
 export const GoToTopButton = ({ handler, visible }) => {
   const theme = useTheme();
@@ -56,6 +58,12 @@ export default function LibraryScreen({ navigation, route }) {
     listRef.current.scrollToIndex({ index: 0, viewOffset: 20 });
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(clearChapterList());
+    }, [dispatch]),
+  );
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -69,9 +77,11 @@ export default function LibraryScreen({ navigation, route }) {
     getData();
   }, [dispatch]);
 
-  if (error) {
-    ToastAndroid.show(error, ToastAndroid.SHORT);
-  }
+  useEffect(() => {
+    if (error) {
+      ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
+  }, [error]);
 
   const content = (
     <FlatList
