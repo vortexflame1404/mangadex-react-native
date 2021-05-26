@@ -15,7 +15,7 @@ export const getFollowedMangas = createAsyncThunk(
     try {
       const response = await getCurrentFollowedMangas();
       console.log('in async thunk');
-      return apiMangaListParser(response.data.results);
+      return await apiMangaListParser(response.data.results);
     } catch (e) {
       if (e.response) {
         const { status, statusText, data } = e.response;

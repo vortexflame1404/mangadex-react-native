@@ -9,5 +9,5 @@ export default {
   /// CONSTANT STRING ///
   baseUrl: 'https://mangadex.org',
   apiUrl: 'https://api.mangadex.org/',
-  coverUrl: 'https://uploads.mangadex.org/',
+  coverUrl: 'https://uploads.mangadex.org/covers/',
 };
