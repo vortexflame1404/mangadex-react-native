@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Dimensions, StyleSheet } from 'react-native';
-import { Text, useTheme } from '@ui-kitten/components';
+import { Divider, Layout, Text, useTheme } from '@ui-kitten/components';
 import FastImage from 'react-native-fast-image';
 
 export const MangaHeader = ({ manga }) => {
@@ -11,7 +11,7 @@ export const MangaHeader = ({ manga }) => {
   const { status } = other;
 
   return (
-    <React.Fragment>
+    <Layout level={'3'} style={{ flex: 1 }}>
       <View style={[styles.container, { height: sizeHeight }]}>
         <FastImage
           source={{
@@ -96,7 +96,8 @@ export const MangaHeader = ({ manga }) => {
       <View style={{ marginTop: 20, marginHorizontal: 10, marginBottom: 20 }}>
         <Text>{description}</Text>
       </View>
-    </React.Fragment>
+      <Divider />
+    </Layout>
   );
 };
 

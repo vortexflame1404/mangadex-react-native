@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { Divider, Layout, List } from '@ui-kitten/components';
+import { FlatList, StyleSheet } from 'react-native';
+import { Divider, Layout } from '@ui-kitten/components';
 import { ChapterListItem } from '../../components/ChapterListItem';
 import { MangaHeader } from '../../components/MangaHeader';
 import { LoadingCircle } from '../../components/LoadingCircle';
@@ -50,7 +50,7 @@ export default function MangaDetailScreen({ navigation, route }) {
   }, [dispatch, mangaId]);
 
   const content = (
-    <List
+    <FlatList
       data={chapters}
       renderItem={renderItem}
       ItemSeparatorComponent={Divider}

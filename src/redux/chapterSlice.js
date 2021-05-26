@@ -22,8 +22,9 @@ export const getChapterList = createAsyncThunk(
       });
       return chapterListParser(responseChapters.data.results);
     } catch (e) {
+      console.log('in get chapters');
       if (e.response) {
-        console.log('in get chapters ' + e.response.data);
+        console.log(e.response);
         return rejectedWithValue(
           e.response.status + ' ' + e.response.statusText,
         );

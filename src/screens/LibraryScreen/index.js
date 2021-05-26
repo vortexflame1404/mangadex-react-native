@@ -69,11 +69,9 @@ export default function LibraryScreen({ navigation, route }) {
     getData();
   }, [dispatch]);
 
-  useEffect(() => {
-    if (error) {
-      ToastAndroid.show(error, ToastAndroid.SHORT);
-    }
-  }, [error]);
+  if (error) {
+    ToastAndroid.show(error, ToastAndroid.SHORT);
+  }
 
   const content = (
     <FlatList
