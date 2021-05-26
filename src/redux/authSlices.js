@@ -4,6 +4,7 @@ import { clearToken, getRefreshToken, setToken } from '../services/storage';
 
 const initialState = {
   isAuthenticated: false,
+  isCheckingFirstLaunch: false,
   isAuthenticating: false,
   statusText: null,
   errorMessage: null,
@@ -91,6 +92,8 @@ export const authWhenLaunch = createAsyncThunk(
   },
 );
 
+export const selectIsCheckingFirstLaunch = (state) =>
+  state.auth.isCheckingFirstLaunch;
 export const selectIsAuthenticated = (state) => state.auth.isAuthenticated;
 export const selectIsAuthenticating = (state) => state.auth.isAuthenticating;
 export const selectAuthStatusText = (state) => state.auth.statusText;
@@ -117,16 +120,16 @@ const authSlice = createSlice({
     },
     [authWhenLaunch.pending]: (state, _) => {
       state.isAuthenticated = false;
-      state.isAuthenticating = true;
+      state.isCheckingFirstLaunch = true;
     },
     [authWhenLaunch.fulfilled]: (state, action) => {
       state.isAuthenticated = true;
-      state.isAuthenticating = false;
+      state.isCheckingFirstLaunch = false;
       state.errorMessage = null;
     },
     [authWhenLaunch.rejected]: (state, { payload }) => {
       state.isAuthenticated = false;
-      state.isAuthenticating = false;
+      state.isCheckingFirstLaunch = false;
       state.errorMessage = payload;
       state.statusText = null;
     },

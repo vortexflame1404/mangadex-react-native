@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
 import {
   Input,
@@ -46,9 +46,11 @@ export default function LoginScreen({ navigation, route }) {
     </TouchableWithoutFeedback>
   );
 
-  if (statusText) {
-    ToastAndroid.show(statusText, ToastAndroid.SHORT);
-  }
+  useEffect(() => {
+    if (statusText) {
+      ToastAndroid.show(statusText, ToastAndroid.SHORT);
+    }
+  }, [statusText]);
   const handleLogin = async () => {
     try {
       const resultAction = await dispatch(login({ username, password }));

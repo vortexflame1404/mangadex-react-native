@@ -7,14 +7,14 @@ import {
   selectAuthError,
   selectAuthStatusText,
   selectIsAuthenticated,
-  selectIsAuthenticating,
+  selectIsCheckingFirstLaunch,
 } from '../redux/authSlices';
 import LoginScreen from '../screens/LoginScreen';
 import TopStackNavigator from './TopStackNavigator';
 import { SplashScreen } from '../components/SplashScreen';
 
 export const RootNavigator = () => {
-  const loading = useSelector(selectIsAuthenticating);
+  const loading = useSelector(selectIsCheckingFirstLaunch);
   const auth = useSelector(selectIsAuthenticated);
   const authStatusText = useSelector(selectAuthStatusText);
   const authError = useSelector(selectAuthError);
@@ -22,9 +22,11 @@ export const RootNavigator = () => {
 
   const toast = authStatusText || authError;
 
-  if (toast) {
-    ToastAndroid.show(toast, ToastAndroid.SHORT);
-  }
+  useEffect(() => {
+    if (toast) {
+      ToastAndroid.show(toast, ToastAndroid.SHORT);
+    }
+  }, [toast]);
 
   useEffect(() => {
     const checkLogin = async () => {
