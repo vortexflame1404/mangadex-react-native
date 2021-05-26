@@ -22,7 +22,7 @@ const demographics = {
 };
 
 export const chapterListParser = (results) => {
-  const chapters = results.map((item) => {
+  return results.map((item) => {
     const { relationships } = item;
     const { id, attributes } = item.data;
     const {
@@ -49,8 +49,4 @@ export const chapterListParser = (results) => {
       hash,
     };
   });
-
-  return chapters.sort(
-    (a, b) => parseInt(b.chapter, 10) - parseInt(a.chapter, 10),
-  );
 };
