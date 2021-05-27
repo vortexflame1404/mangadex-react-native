@@ -132,7 +132,7 @@ export const getMangaDetails = async (mangaId) => {
 
 export const getChaptersOfManga = async (
   mangaId,
-  { limit, offset, translatedLanguage },
+  { limit, offset = 0, translatedLanguage },
 ) => {
   return await mangadexAPI.get(`/manga/${mangaId}/feed?order[chapter]=desc&`, {
     params: {
