@@ -4,8 +4,9 @@ import { chapterListParser } from '../parser/ApiMangaDetailsParser';
 
 const initialState = {
   isFetching: false,
-  chapterList: null,
+  chapterList: [],
   errorMessage: null,
+  totalChapter: 0,
 };
 
 export const getChapterList = createAsyncThunk(
@@ -20,7 +21,9 @@ export const getChapterList = createAsyncThunk(
         translatedLanguage,
         offset,
       });
-      return chapterListParser(responseChapters.data.results);
+      const { results, total } = responseChapters.data;
+      const chapterList = chapterListParser(results);
+      return { chapterList, total };
     } catch (e) {
       console.log('in get chapters');
       if (e.response) {
@@ -40,19 +43,29 @@ export const getChapterList = createAsyncThunk(
 
 export const selectIsFetchingChapters = (state) => state.chapter.isFetching;
 export const selectChapterList = (state) => state.chapter.chapterList;
+export const selectChapterListLength = (state) =>
+  state.chapter.chapterList.length;
+export const selectChapterListTotal = (state) => state.chapter.totalChapter;
 export const selectErrorMessage = (state) => state.chapter.errorMessage;
 
 const chapterSlice = createSlice({
   name: 'chapter',
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    clearChapterList(state, _) {
+      state.chapterList.length = 0;
+      state.totalChapter = 0;
+    },
+  },
   extraReducers: {
     [getChapterList.pending]: (state, _) => {
       state.isFetching = true;
     },
     [getChapterList.fulfilled]: (state, { payload }) => {
+      const { chapterList, total } = payload;
       state.isFetching = false;
-      state.chapterList = payload;
+      state.chapterList = [...state.chapterList, ...chapterList];
+      state.totalChapter = total;
     },
     [getChapterList.rejected]: (state, { payload }) => {
       state.isFetching = false;
@@ -60,5 +73,7 @@ const chapterSlice = createSlice({
     },
   },
 });
+
+export const { clearChapterList } = chapterSlice.actions;
 
 export default chapterSlice.reducer;
