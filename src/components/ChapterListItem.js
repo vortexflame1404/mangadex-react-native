@@ -1,6 +1,6 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { Icon, ListItem, Text, useTheme } from '@ui-kitten/components';
+import { TouchableOpacity, View } from 'react-native';
+import { Icon, Text, useTheme } from '@ui-kitten/components';
 import { calculateDistanceFromTimestampToNow } from '../utils';
 import languages from '../assets/languages';
 import { useNavigation } from '@react-navigation/core';
@@ -26,27 +26,7 @@ export const ChapterListItem = ({ item }) => {
   const manga = useSelector(selectSelectedManga);
   const vol = item.volume ? `Vol ${item.volume} ` : '';
   const title = item.title ? ` - ${item.title}` : '';
-
-  const renderTitle = () => (
-    <Text
-      category={'p1'}
-      numberOfLines={1}
-      ellipsizeMode={'tail'}
-      style={{ marginHorizontal: 5 }}>
-      {vol + `Ch. ${item.chapter}` + title}
-    </Text>
-  );
-  const renderDescription = () => (
-    <Text
-      category={'c1'}
-      numberOfLines={1}
-      ellipsizeMode={'tail'}
-      style={{ marginHorizontal: 5 }}>
-      {calculateDistanceFromTimestampToNow(item.updatedAt) +
-        '   ◈   ' +
-        languages[item.translatedLanguage]}
-    </Text>
-  );
+  const theme = useTheme();
 
   const chapterSelectHandler = () => {
     navigation.navigate('Reader', {
@@ -60,10 +40,33 @@ export const ChapterListItem = ({ item }) => {
   };
 
   return (
-    <ListItem
-      title={renderTitle}
-      description={renderDescription}
-      onPress={chapterSelectHandler}
-    />
+    <View
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '10%',
+        paddingVertical: 10,
+        backgroundColor: theme['background-basic-color-1'],
+      }}>
+      <TouchableOpacity onPress={chapterSelectHandler}>
+        <Text
+          category={'p1'}
+          numberOfLines={1}
+          ellipsizeMode={'tail'}
+          style={{ marginHorizontal: 5 }}>
+          {vol + `Ch. ${item.chapter}` + title}
+          <Text>{'\n'}</Text>
+        </Text>
+        <Text
+          category={'c1'}
+          numberOfLines={1}
+          ellipsizeMode={'tail'}
+          style={{ marginHorizontal: 5 }}>
+          {calculateDistanceFromTimestampToNow(item.updatedAt) +
+            '   ◈   ' +
+            languages[item.translatedLanguage]}
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 };
