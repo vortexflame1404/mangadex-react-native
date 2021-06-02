@@ -5,7 +5,7 @@ export const chapterDetailsParser = async (chapterId, hash, urls) => {
   try {
     const { baseUrl } = (await getBaseUrl(chapterId)).data;
     const pagesUrl = urls.map((item) => {
-      return { url: `${baseUrl}/data/${hash}/${item}` };
+      return `${baseUrl}/data/${hash}/${item}`;
     });
     return {
       pagesUrl,
