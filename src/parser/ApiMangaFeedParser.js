@@ -50,3 +50,8 @@ export const chapterListParser = (results) => {
     };
   });
 };
+
+export const chapterListParserWithSort = (data) => {
+  const res = chapterListParser(data);
+  return res.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+};

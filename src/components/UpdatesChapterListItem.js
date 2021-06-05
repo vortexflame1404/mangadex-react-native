@@ -1,55 +1,85 @@
 import React from 'react';
+import { TouchableOpacity } from 'react-native';
 import { Avatar, ListItem, Text } from '@ui-kitten/components';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/core';
+import { useSelector } from 'react-redux';
 
-const MangaThumbnail = ({ url }) => (
-  <Avatar shape={'rounded'} source={{ uri: url }} ImageComponent={FastImage} />
+const MangaThumbnail = ({ url, onPress }) => (
+  <TouchableOpacity onPress={onPress}>
+    <Avatar
+      shape={'rounded'}
+      source={{ uri: url }}
+      ImageComponent={FastImage}
+    />
+  </TouchableOpacity>
 );
 
 export const UpdatesChapterListItem = ({ item }) => {
   const navigation = useNavigation();
-  const { mangaTitle, volume, chapter, title, thumbnail_url, id, read } = item;
+  const {
+    chapterId,
+    mangaId,
+    volume,
+    chapter,
+    title,
+    translatedLanguage,
+    updatedAt,
+    data,
+    dataSaver,
+    hash,
+  } = item;
+  const manga = useSelector((state) =>
+    state.manga.mangaList.find((i) => i.mangaId === mangaId),
+  );
   let volumeString = '';
   let titleString = '';
 
-  const renderThumbnail = () => <MangaThumbnail url={thumbnail_url} />;
-  if (volume.length) {
+  const renderThumbnail = () => (
+    <MangaThumbnail
+      url={manga.uri}
+      onPress={() => console.log('thumbnail pressed')}
+    />
+  );
+  if (volume) {
     volumeString = `Vol.${volume} `;
   }
-  if (title.length) {
+  if (title) {
     titleString = ` - ${title}`;
   }
 
-  const textAppearance = read ? 'hint' : 'default';
   const renderTitle = () => (
     <Text
-      appearance={textAppearance}
       category={'p1'}
+      numberOfLines={1}
+      ellipsizeMode={'tail'}
       style={{ marginHorizontal: 5 }}>
-      {mangaTitle}
+      {manga.title}
     </Text>
   );
   const renderDescription = () => (
     <Text
-      appearance={textAppearance}
       category={'c1'}
+      numberOfLines={1}
+      ellipsizeMode={'tail'}
       style={{ marginHorizontal: 5 }}>
       {`${volumeString}Ch.${chapter}${titleString}`}
     </Text>
   );
+
+  const selectHandler = () =>
+    navigation.navigate('Reader', {
+      chapterId,
+      hash,
+      data,
+      dataSaver,
+    });
   return (
     <ListItem
       title={renderTitle}
       description={renderDescription}
       accessoryLeft={renderThumbnail}
-      onPress={() =>
-        navigation.navigate('Reader', {
-          chapterId: id,
-          mangaTitle: mangaTitle,
-          chapterTitle: `${volumeString}Ch.${chapter}${titleString}`,
-        })
-      }
+      onPress={selectHandler}
     />
   );
 };

@@ -9,14 +9,6 @@ import { useFocusEffect } from '@react-navigation/core';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ChapterPage } from '../../components/ChapterPage';
 
-const styles = StyleSheet.create({
-  footer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
 const { width, height } = Dimensions.get('window');
 
 export const ReaderScreen = ({ navigation, route }) => {

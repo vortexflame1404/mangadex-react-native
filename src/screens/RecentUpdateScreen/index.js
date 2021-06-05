@@ -1,64 +1,53 @@
-import React, { useEffect, useState } from 'react';
-import { SectionList } from 'react-native';
-import { Text, Layout, Divider } from '@ui-kitten/components';
+import React, { useEffect } from 'react';
+import { FlatList, ToastAndroid } from 'react-native';
+import { Layout, Divider } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFollowedUpdates } from '../../api/mangadex';
-import { followedUpdatesParser } from '../../parser/ApiUpdatesParser';
-import { setError, unsetError } from '../../redux/errorsSlice';
-import { ErrorComponent } from '../../components/ErrorComponent';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { UpdatesChapterListItem } from '../../components/UpdatesChapterListItem';
+import {
+  getFollowedMangaFeed,
+  selectChapterListUpdate,
+  selectErrorMessage,
+  selectIsFetchingChapters,
+} from '../../redux/chapterSlice';
+import { selectIsFetchingManga } from '../../redux/mangaSlice';
+
+const renderItem = ({ item }) => <UpdatesChapterListItem item={item} />;
+const keyExtractor = ({ chapterId }) => chapterId;
 
 export default function RecentUpdateScreen({ navigation, route }) {
-  const [updates, setUpdates] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const loadingChapterList = useSelector(selectIsFetchingChapters);
+  const loadingMangaList = useSelector(selectIsFetchingManga);
+  const errorMessage = useSelector(selectErrorMessage);
+  const chapters = useSelector(selectChapterListUpdate);
   const dispatch = useDispatch();
-  const errorMessage = useSelector((state) => state.errors.message);
-  const errorCode = useSelector((state) => state.errors.code);
+  const loading = loadingMangaList || loadingChapterList;
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        setLoading(true);
-        dispatch(unsetError());
-        const response = await getFollowedUpdates();
-        setUpdates(followedUpdatesParser(response.data.data));
-      } catch (e) {
-        if (e.response) {
-          const { status, data } = e.response;
-          dispatch(setError({ code: status, message: 'Error w/ server' }));
-          console.log(data);
-        } else if (e.request) {
-          dispatch(setError({ code: 503, message: 'Error w/ making request' }));
-          console.log(e.request);
-        } else {
-          console.log('errror', e.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!loadingMangaList) {
+      dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
+    }
+  }, [dispatch, loadingMangaList]);
 
-    getData();
-  }, [dispatch]);
+  useEffect(() => {
+    if (errorMessage) {
+      ToastAndroid.show(errorMessage, ToastAndroid.SHORT);
+    }
+  }, [errorMessage]);
 
-  const renderItem = ({ item }) => <UpdatesChapterListItem item={item} />;
-  const renderSectionHeader = ({ section: { title } }) => (
-    <Text category={'h5'} style={{ marginLeft: 10, marginVertical: 5 }}>
-      {title}
-    </Text>
-  );
-
-  const content = errorMessage ? (
-    <ErrorComponent message={errorMessage} code={errorCode} />
-  ) : (
-    <SectionList
-      sections={updates}
-      keyExtractor={(item, index) => item + index}
+  const content = (
+    <FlatList
+      data={chapters}
       renderItem={renderItem}
-      renderSectionHeader={renderSectionHeader}
       ItemSeparatorComponent={Divider}
-      SectionSeparatorComponent={Divider}
+      keyExtractor={keyExtractor}
+      maxToRenderPerBatch={13}
+      onRefresh={() =>
+        dispatch(
+          getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }),
+        )
+      }
+      refreshing={loadingChapterList}
     />
   );
 

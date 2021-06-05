@@ -1,10 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getChaptersOfManga } from '../api/mangadex';
-import { chapterListParser } from '../parser/ApiMangaDetailsParser';
+import { getChaptersOfManga, getFollowedUpdates } from '../api/mangadex';
+import {
+  chapterListParser,
+  chapterListParserWithSort,
+} from '../parser/ApiMangaFeedParser';
 
 const initialState = {
   isFetching: false,
   chapterList: [],
+  chapterListUpdate: [],
   errorMessage: null,
   totalChapter: 0,
 };
@@ -41,11 +45,40 @@ export const getChapterList = createAsyncThunk(
   },
 );
 
+export const getFollowedMangaFeed = createAsyncThunk(
+  'chapter/getFollowedMangaFeed',
+  async ({ translatedLanguage, offset }, { rejectedWithValue }) => {
+    try {
+      const response = await getFollowedUpdates({
+        translatedLanguage,
+        offset,
+      });
+      const { results } = response.data;
+      return { chapterList: chapterListParserWithSort(results) };
+    } catch (e) {
+      console.log('in get followedmangafeed');
+      if (e.response) {
+        console.log(e.response);
+        return rejectedWithValue(
+          e.response.status + ' ' + e.response.statusText,
+        );
+      } else if (e.request) {
+        return rejectedWithValue('error in request');
+      } else {
+        console.log('chpater slice ', e);
+        return rejectedWithValue('internal error');
+      }
+    }
+  },
+);
+
 export const selectIsFetchingChapters = (state) => state.chapter.isFetching;
 export const selectChapterList = (state) => state.chapter.chapterList;
 export const selectChapterListLength = (state) =>
   state.chapter.chapterList.length;
 export const selectChapterListTotal = (state) => state.chapter.totalChapter;
+export const selectChapterListUpdate = (state) =>
+  state.chapter.chapterListUpdate;
 export const selectErrorMessage = (state) => state.chapter.errorMessage;
 
 const chapterSlice = createSlice({
@@ -69,6 +102,17 @@ const chapterSlice = createSlice({
     },
     [getChapterList.rejected]: (state, { payload }) => {
       state.isFetching = false;
+      state.errorMessage = payload;
+    },
+    [getFollowedMangaFeed.pending]: (state, _) => {
+      state.isFetching = true;
+    },
+    [getFollowedMangaFeed.fulfilled]: (state, { payload }) => {
+      state.isFetching = false;
+      const { chapterList } = payload;
+      state.chapterListUpdate = chapterList;
+    },
+    [getFollowedMangaFeed.rejected]: (state, { payload }) => {
       state.errorMessage = payload;
     },
   },

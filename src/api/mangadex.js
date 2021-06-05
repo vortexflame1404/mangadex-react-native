@@ -155,10 +155,12 @@ export const getCover = async (coverId) => {
   return await mangadexAPI.get(`/cover/${coverId}`);
 };
 
-export const getFollowedUpdates = async () => {
-  return await mangadexAPI.get('/user/me/followed-updates', {
+export const getFollowedUpdates = async ({ translatedLanguage, offset }) => {
+  return await mangadexAPI.get('/user/follows/manga/feed', {
     params: {
-      type: 1,
+      translatedLanguage,
+      offset,
+      limit: 50,
     },
   });
 };
