@@ -6,6 +6,7 @@ import { MangaHeader } from '../../components/MangaHeader';
 import { LoadingCircle } from '../../components/LoadingCircle';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  clearChapterList,
   getChapterList,
   selectChapterList,
   selectChapterListLength,
@@ -13,9 +14,15 @@ import {
   selectIsFetchingChapters,
 } from '../../redux/chapterSlice';
 import { setSelectedManga } from '../../redux/mangaSlice';
+import { listItemHeight } from '../../utils';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
 const keyExtractor = ({ chapterId }) => chapterId;
+const handleGetItemLayout = (data, index) => ({
+  length: listItemHeight,
+  offset: listItemHeight * index,
+  index,
+});
 
 export default function MangaDetailScreen({ navigation, route }) {
   const { mangaId, description, other, title, uri } = route.params;
@@ -35,22 +42,16 @@ export default function MangaDetailScreen({ navigation, route }) {
   }, [dispatch, mangaId]);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        dispatch(
-          getChapterList({
-            mangaId,
-            limit: 50,
-            offset: 0,
-            translatedLanguage: ['en'],
-          }),
-        );
-      } catch (e) {
-        console.log('mangadetails get chapter', e);
-      }
-    };
+    dispatch(
+      getChapterList({
+        mangaId,
+        limit: 50,
+        offset: 0,
+        translatedLanguage: ['en'],
+      }),
+    );
 
-    getData();
+    return () => dispatch(clearChapterList());
   }, [dispatch, mangaId]);
 
   const handleOnEndReached = () => {
@@ -77,7 +78,8 @@ export default function MangaDetailScreen({ navigation, route }) {
       keyExtractor={keyExtractor}
       ListHeaderComponent={renderHeader}
       maxToRenderPerBatch={13}
-      onEndReachedThreshold={0.9}
+      onEndReachedThreshold={0.1}
+      getItemLayout={handleGetItemLayout}
       onEndReached={handleOnEndReached}
       ListFooterComponent={handleLoadingMore}
     />

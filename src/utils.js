@@ -1,11 +1,6 @@
-import {
-  formatDistanceToNow,
-  fromUnixTime,
-  sub,
-  isAfter,
-  format,
-} from 'date-fns';
+import { formatDistanceToNow, sub, isAfter, format } from 'date-fns';
 import { decode } from 'html-entities';
+import { Dimensions } from 'react-native';
 
 const descriptionLanguages = [
   '=FRANCAIS=',
@@ -158,3 +153,6 @@ export const calculateDistanceFromTimestampToNow = (timestamp) => {
 
 export const wait = (ms) =>
   new Promise((resolve, reject) => setTimeout(resolve, ms));
+
+const { width, height } = Dimensions.get('window');
+export const listItemHeight = height / 12;

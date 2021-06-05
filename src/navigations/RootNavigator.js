@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { ToastAndroid } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,9 +18,14 @@ export const RootNavigator = () => {
   const auth = useSelector(selectIsAuthenticated);
   const authStatusText = useSelector(selectAuthStatusText);
   const authError = useSelector(selectAuthError);
+  const [showSplash, setShowSplash] = useState(true);
   const dispatch = useDispatch();
 
   const toast = authStatusText || authError;
+  useEffect(() => {
+    dispatch(authWhenLaunch());
+    setShowSplash(false);
+  }, [dispatch]);
 
   useEffect(() => {
     if (toast) {
@@ -28,21 +33,7 @@ export const RootNavigator = () => {
     }
   }, [toast]);
 
-  useEffect(() => {
-    const checkLogin = async () => {
-      try {
-        dispatch(authWhenLaunch());
-        console.log('root nav after auth launch');
-      } catch (e) {
-        console.log('root nav');
-        console.log(e);
-      }
-    };
-
-    checkLogin();
-  }, [dispatch]);
-
-  if (loading) {
+  if (showSplash || loading) {
     return <SplashScreen />;
   }
 

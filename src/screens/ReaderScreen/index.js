@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import { Layout } from '@ui-kitten/components';
 import { useDispatch } from 'react-redux';
 import { setError, unsetError } from '../../redux/errorsSlice';

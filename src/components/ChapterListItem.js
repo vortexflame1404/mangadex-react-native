@@ -6,6 +6,7 @@ import languages from '../assets/languages';
 import { useNavigation } from '@react-navigation/core';
 import { useSelector } from 'react-redux';
 import { selectSelectedManga } from '../redux/mangaSlice';
+import { listItemHeight } from '../utils';
 
 const DownloadIcon = (props) => {
   const theme = useTheme();
@@ -40,33 +41,32 @@ export const ChapterListItem = ({ item }) => {
   };
 
   return (
-    <View
+    <TouchableOpacity
       style={{
         flex: 1,
         width: '100%',
-        height: '10%',
+        height: listItemHeight,
         paddingVertical: 10,
         backgroundColor: theme['background-basic-color-1'],
-      }}>
-      <TouchableOpacity onPress={chapterSelectHandler}>
-        <Text
-          category={'p1'}
-          numberOfLines={1}
-          ellipsizeMode={'tail'}
-          style={{ marginHorizontal: 5 }}>
-          {vol + `Ch. ${item.chapter}` + title}
-          <Text>{'\n'}</Text>
-        </Text>
-        <Text
-          category={'c1'}
-          numberOfLines={1}
-          ellipsizeMode={'tail'}
-          style={{ marginHorizontal: 5 }}>
-          {calculateDistanceFromTimestampToNow(item.updatedAt) +
-            '   ◈   ' +
-            languages[item.translatedLanguage]}
-        </Text>
-      </TouchableOpacity>
-    </View>
+      }}
+      onPress={chapterSelectHandler}>
+      <Text
+        category={'p1'}
+        numberOfLines={1}
+        ellipsizeMode={'tail'}
+        style={{ marginHorizontal: 5 }}>
+        {vol + `Ch. ${item.chapter}` + title}
+        <Text>{'\n'}</Text>
+      </Text>
+      <Text
+        category={'c1'}
+        numberOfLines={1}
+        ellipsizeMode={'tail'}
+        style={{ marginHorizontal: 5 }}>
+        {calculateDistanceFromTimestampToNow(item.updatedAt) +
+          '   ◈   ' +
+          languages[item.translatedLanguage]}
+      </Text>
+    </TouchableOpacity>
   );
 };

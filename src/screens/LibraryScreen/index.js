@@ -13,11 +13,8 @@ import {
   getFollowedMangas,
   selectErrorMessage,
   selectIsFetchingManga,
-  selectIsMangas,
   selectMangaLists,
 } from '../../redux/mangaSlice';
-import { useFocusEffect } from '@react-navigation/core';
-import { clearChapterList } from '../../redux/chapterSlice';
 
 export const GoToTopButton = ({ handler, visible }) => {
   const theme = useTheme();
@@ -49,7 +46,6 @@ const keyExtractor = ({ mangaId }) => mangaId.toString();
 export default function LibraryScreen({ navigation, route }) {
   const loading = useSelector(selectIsFetchingManga);
   const mangas = useSelector(selectMangaLists);
-  const isManga = useSelector(selectIsMangas);
   const error = useSelector(selectErrorMessage);
   const dispatch = useDispatch();
 
@@ -58,23 +54,8 @@ export default function LibraryScreen({ navigation, route }) {
     listRef.current.scrollToIndex({ index: 0, viewOffset: 20 });
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      dispatch(clearChapterList());
-    }, [dispatch]),
-  );
-
   useEffect(() => {
-    const getData = async () => {
-      try {
-        dispatch(getFollowedMangas());
-        console.log('dispatch is called ');
-        // dispatch(setManga({ raw: response.data.results }));
-      } catch (e) {
-        console.log('get data library ', e.message);
-      }
-    };
-    getData();
+    dispatch(getFollowedMangas());
   }, [dispatch]);
 
   useEffect(() => {
@@ -97,7 +78,7 @@ export default function LibraryScreen({ navigation, route }) {
   return (
     <Layout style={styles.container}>
       {loading ? <LoadingCircle /> : content}
-      <GoToTopButton handler={() => goToTopHandler(ref)} visible={isManga} />
+      <GoToTopButton handler={() => goToTopHandler(ref)} visible={!loading} />
     </Layout>
   );
 }
