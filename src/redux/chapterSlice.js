@@ -87,6 +87,7 @@ const chapterSlice = createSlice({
   reducers: {
     clearChapterList(state, _) {
       state.chapterList.length = 0;
+      state.chapterListUpdate.length = 0;
       state.totalChapter = 0;
     },
   },
@@ -110,7 +111,7 @@ const chapterSlice = createSlice({
     [getFollowedMangaFeed.fulfilled]: (state, { payload }) => {
       state.isFetching = false;
       const { chapterList } = payload;
-      state.chapterListUpdate = chapterList;
+      state.chapterListUpdate = [...state.chapterListUpdate, ...chapterList];
     },
     [getFollowedMangaFeed.rejected]: (state, { payload }) => {
       state.errorMessage = payload;

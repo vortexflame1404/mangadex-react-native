@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, ToastAndroid } from 'react-native';
 import { Layout, Divider } from '@ui-kitten/components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,17 +20,31 @@ export default function RecentUpdateScreen({ navigation, route }) {
   const loadingMangaList = useSelector(selectIsFetchingManga);
   const errorMessage = useSelector(selectErrorMessage);
   const chapters = useSelector(selectChapterListUpdate);
+  const [initialLoad, setInitialLoad] = useState(true);
   const dispatch = useDispatch();
-  const loading = loadingMangaList || loadingChapterList;
 
-  const handleOnRefresh = () =>
-    dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
+  const handleOnEndReached = () => {
+    if (!loadingChapterList) {
+      dispatch(
+        getFollowedMangaFeed({
+          translatedLanguage: ['en'],
+          offset: chapters.length,
+        }),
+      );
+    }
+  };
+
+  const handleLoadingMore = () => loadingChapterList && <LoadingCircle />;
+  useEffect(() => {
+    loadingMangaList ||
+      dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
+  }, [dispatch, loadingMangaList]);
 
   useEffect(() => {
-    if (!loadingMangaList) {
-      dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
+    if (loadingMangaList === false && loadingChapterList === false) {
+      setInitialLoad(false);
     }
-  }, [dispatch, loadingMangaList]);
+  }, [loadingChapterList, loadingMangaList]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -45,13 +59,16 @@ export default function RecentUpdateScreen({ navigation, route }) {
       ItemSeparatorComponent={Divider}
       keyExtractor={keyExtractor}
       maxToRenderPerBatch={13}
-      onRefresh={handleOnRefresh}
-      refreshing={loadingChapterList}
+      onEndReachedThreshold={0.1}
+      onEndReached={handleOnEndReached}
+      ListFooterComponent={handleLoadingMore}
       windowSize={14}
     />
   );
 
   return (
-    <Layout style={{ flex: 1 }}>{loading ? <LoadingCircle /> : content}</Layout>
+    <Layout style={{ flex: 1 }}>
+      {initialLoad ? <LoadingCircle /> : content}
+    </Layout>
   );
 }
