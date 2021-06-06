@@ -23,6 +23,9 @@ export default function RecentUpdateScreen({ navigation, route }) {
   const dispatch = useDispatch();
   const loading = loadingMangaList || loadingChapterList;
 
+  const handleOnRefresh = () =>
+    dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
+
   useEffect(() => {
     if (!loadingMangaList) {
       dispatch(getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }));
@@ -42,12 +45,9 @@ export default function RecentUpdateScreen({ navigation, route }) {
       ItemSeparatorComponent={Divider}
       keyExtractor={keyExtractor}
       maxToRenderPerBatch={13}
-      onRefresh={() =>
-        dispatch(
-          getFollowedMangaFeed({ translatedLanguage: ['en'], offset: 0 }),
-        )
-      }
+      onRefresh={handleOnRefresh}
       refreshing={loadingChapterList}
+      windowSize={14}
     />
   );
 

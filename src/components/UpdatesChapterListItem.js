@@ -15,6 +15,9 @@ const MangaThumbnail = ({ url, onPress }) => (
   </TouchableOpacity>
 );
 
+const handleOnPressThumbnail = (navigation, param) =>
+  navigation.navigate('Manga', param);
+
 export const UpdatesChapterListItem = ({ item }) => {
   const navigation = useNavigation();
   const {
@@ -37,8 +40,8 @@ export const UpdatesChapterListItem = ({ item }) => {
 
   const renderThumbnail = () => (
     <MangaThumbnail
-      url={manga.uri}
-      onPress={() => console.log('thumbnail pressed')}
+      url={`${manga.uri}.512.jpg`}
+      onPress={() => handleOnPressThumbnail(navigation, manga)}
     />
   );
   if (volume) {
@@ -73,6 +76,8 @@ export const UpdatesChapterListItem = ({ item }) => {
       hash,
       data,
       dataSaver,
+      mangaTitle: manga.title,
+      chapterTitle: `${volumeString}Ch.${chapter}${titleString}`,
     });
   return (
     <ListItem

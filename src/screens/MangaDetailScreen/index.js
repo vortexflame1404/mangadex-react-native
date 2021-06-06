@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FlatList, StyleSheet, ToastAndroid } from 'react-native';
 import { Divider, Layout } from '@ui-kitten/components';
 import { ChapterListItem } from '../../components/ChapterListItem';
@@ -18,11 +18,6 @@ import { listItemHeight } from '../../utils';
 
 const renderItem = ({ item }) => <ChapterListItem item={item} />;
 const keyExtractor = ({ chapterId }) => chapterId;
-const handleGetItemLayout = (data, index) => ({
-  length: listItemHeight,
-  offset: listItemHeight * index,
-  index,
-});
 
 export default function MangaDetailScreen({ navigation, route }) {
   const { mangaId, description, other, title, uri } = route.params;
@@ -33,6 +28,14 @@ export default function MangaDetailScreen({ navigation, route }) {
 
   const dispatch = useDispatch();
 
+  const handleGetItemLayout = useCallback(
+    (data, index) => ({
+      length: listItemHeight,
+      offset: listItemHeight * index,
+      index,
+    }),
+    [],
+  );
   const renderHeader = () => (
     <MangaHeader manga={{ description, other, title, uri }} />
   );
@@ -82,6 +85,7 @@ export default function MangaDetailScreen({ navigation, route }) {
       getItemLayout={handleGetItemLayout}
       onEndReached={handleOnEndReached}
       ListFooterComponent={handleLoadingMore}
+      windowSize={14}
     />
   );
 

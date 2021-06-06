@@ -20,6 +20,8 @@ export const ChapterPage = ({ pageUrl }) => {
         onLoadEnd={() => {
           setLoading(false);
         }}
+        onLoad={(input) => console.log(input.dispatchConfig)}
+        onError={(input) => console.log(Object.keys(input))}
       />
     </>
   );

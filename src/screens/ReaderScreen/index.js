@@ -74,9 +74,9 @@ export const ReaderScreen = ({ navigation, route }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ width: `${100 * chapter.pageLength}%` }}
           decelerationRate={'fast'}
-          onScroll={({ nativeEvent }) =>
-            console.log(getPageNum(nativeEvent.contentOffset.x))
-          }
+          // onScroll={({ nativeEvent }) =>
+          //   console.log(getPageNum(nativeEvent.contentOffset.x))
+          // }
           snapToInterval={width}>
           {pages}
         </ScrollView>
