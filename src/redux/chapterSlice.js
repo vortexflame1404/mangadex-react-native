@@ -87,7 +87,6 @@ const chapterSlice = createSlice({
   reducers: {
     clearChapterList(state, _) {
       state.chapterList.length = 0;
-      state.chapterListUpdate.length = 0;
       state.totalChapter = 0;
     },
   },
